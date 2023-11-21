@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react"
 import axios from 'axios'
+import useFetch from "../customize/useFetch"
 
 const Provinces = () => {
 
@@ -9,28 +10,46 @@ const Provinces = () => {
     const [currentDistrict, setCurrentDistrict] = useState('')
     const [listWards, setListWards] = useState([])
 
+    let dataProvince = useFetch('https://provinces.open-api.vn/api/')
 
-
-    useEffect(async () => {
-        let res = await axios.get('https://provinces.open-api.vn/api/')
-        let data = res && res.data ? res.data : []
-        setListProvinces(data)
-    }, [])
-
-    useEffect(async () => {
-        if (currentProvince && +currentProvince > 0) {
-            let res = await axios.get(`https://provinces.open-api.vn/api/p/${currentProvince}?depth=2`)
-            let data = res && res.data && res.data.districts ? res.data.districts : []
-            setListDistrict(data)
+    useEffect(() => {
+        if (dataProvince.dataFetch && dataProvince.dataFetch.length > 0) {
+            setListProvinces(dataProvince.dataFetch)
         }
+    }, [dataProvince])
+    // useEffect(() => {
+    //     async function fetchDataProVince() {
+    //         let res = await axios.get('https://provinces.open-api.vn/api/')
+    //         let data = res && res.data ? res.data : []
+    //         setListProvinces(data)
+    //     }
+    //     fetchDataProVince()
+    // }, [])
+
+
+
+    useEffect(() => {
+        async function fetchDataDistrict() {
+            if (currentProvince && +currentProvince > 0) {
+                let res = await axios.get(`https://provinces.open-api.vn/api/p/${currentProvince}?depth=2`)
+                let data = res && res.data && res.data.districts ? res.data.districts : []
+                setListDistrict(data)
+            }
+        }
+        fetchDataDistrict()
+
     }, [currentProvince])
 
-    useEffect(async () => {
-        if (currentDistrict && +currentDistrict > 0) {
-            let res = await axios.get(`https://provinces.open-api.vn/api/d/${currentDistrict}?depth=2`)
-            let data = res && res.data && res.data.wards ? res.data.wards : []
-            setListWards(data)
+
+    useEffect(() => {
+        async function fetchDataWards() {
+            if (currentDistrict && +currentDistrict > 0) {
+                let res = await axios.get(`https://provinces.open-api.vn/api/d/${currentDistrict}?depth=2`)
+                let data = res && res.data && res.data.wards ? res.data.wards : []
+                setListWards(data)
+            }
         }
+        fetchDataWards()
     }, [currentDistrict])
 
     const handleOnChangeProvince = (provinceCode) => {
@@ -44,7 +63,7 @@ const Provinces = () => {
     }
 
     return (
-        <>
+        <div >
             <label htmlFor="provinces">Choose a province:</label>
             <select className="select-province" name="provinces" id="provinces" onChange={(e) => handleOnChangeProvince(e.target.value)}>
                 <option value='0'>Select province</option>
@@ -81,7 +100,7 @@ const Provinces = () => {
                     })
                 }
             </select>
-        </>
+        </div>
 
     )
 }

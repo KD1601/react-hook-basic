@@ -4,6 +4,16 @@ import Nav from './views/Nav';
 import { useState, useEffect } from 'react';
 import Todo from './views/Todo';
 import Provinces from './views/Provinces';
+import { CountDown, NewCountDown } from './views/CountDown';
+import Blog from './views/Blog';
+import DetailBlog from './views/DetailBlog';
+import AddNewBlog from './views/AddNewBlog';
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  Link
+} from "react-router-dom";
 
 const App = () => {
 
@@ -42,31 +52,53 @@ const App = () => {
     setTodos(todosCopy)
   }
 
+  const onTimesUp = () => {
+    alert('times up')
+  }
+
   return (
-    <div className="App">
-      <Nav />
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Hello world, I'm {name}
-        </p>
-        <Provinces />
-        {/* <Todo
-          todos={todos}
-          title='All todos'
-          deleteTodo={handleDeteleTodo}
-        />
+    <Router>
+      <div className="App">
+        <Nav />
+        <header className="App-header">
+          <img src={logo} className="App-logo" alt="logo" />
 
-        <Todo
-          todos={todos.filter(item => item.type === 'felix')}
-          title={`Felix todo`}
-          deleteTodo={handleDeteleTodo}
+        </header>
+        <Switch>
+          <Route path="/" exact>
+            <Provinces />
+          </Route>
+          <Route path="/timer">
+            <CountDown
+            // onTimesUp={onTimesUp} 
+            />
+            <span>------------------------------</span>
+            <NewCountDown
+            // onTimesUp={onTimesUp}
+            />
+          </Route>
+          <Route path="/todo">
+            <Todo
+              todos={todos}
+              title='All todos'
+              deleteTodo={handleDeteleTodo}
+            />
+            <input type='text' value={address} onChange={(e) => handleChangeInput(e)} />
+            <button onClick={(e) => handleEventClick(e)}>Click me</button>
+          </Route>
+          <Route path="/blog" exact >
+            <Blog />
+          </Route>
 
-        />
-        <input type='text' value={address} onChange={(e) => handleChangeInput(e)} />
-        <button onClick={(e) => handleEventClick(e)}>Click me</button> */}
-      </header>
-    </div>
+          <Route path="/blog/:id" >
+            <DetailBlog />
+          </Route>
+          <Route path="/add-new-blog" >
+            <AddNewBlog />
+          </Route>
+        </Switch>
+      </div>
+    </Router>
   );
 }
 
